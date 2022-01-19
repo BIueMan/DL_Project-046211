@@ -164,14 +164,15 @@ def train():
 
 
 if __name__ == '__main__':
-    #clean_data()
-    #organise_data()
+    clean_data()
+    # organise_data()
     # plot()
-    model = train()
+
+    """model = train()
     # test
     image = read_image(clean_data_path + '/test/Cd_D2_P4.jpg')
     labels, targets, scores = model.predict(image)
-    show_labeled_image(image, targets['boxes'], targets['labels'])
+    show_labeled_image(image, targets['boxes'], targets['labels'])"""
 
 """
 ## orginize data by name only (not image/xml)
