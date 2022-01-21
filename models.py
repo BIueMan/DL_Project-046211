@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
+import pickle
 
 
 class Mish(torch.nn.Module):
@@ -459,6 +460,8 @@ if  __name__ == "__main__":
     from tool.utils import *
 
     boxes = do_detect(model, sized, 0.5, n_classes,0.4, use_cuda)
+    pickle.dump(boxes, open("boxes.dat", "wb"))
 
     class_names = load_class_names(namesfile)
+    pickle.dump(class_names, open("class_names.dat", "wb"))
     plot_boxes(img, boxes, 'predictions.jpg', class_names)
