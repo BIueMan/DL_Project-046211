@@ -1,18 +1,20 @@
-from LTspice_tranformer.component_pleaser import *
+from component_pleaser import *
 import cv2
 import numpy as np
 import math
 from tqdm import tqdm
+import pickle
 
-TO_DRAW = True
+TO_DRAW = False
 
 # test draw line
 # TODO - MAIN: set image AND box_list AND box_label as input
-image = cv2.imread("test_ground/C11_D1_P3.jpg")
-box_list = [[0.6731611725531126, 0.25595961275853607, 0.14325253665447235, 0.0681848667169872, 0.9995158, 1.0, 11], [0.0996895620697423, 0.5313299153196184, 0.14102786779403687, 0.06384982678451036, 0.99940383, 1.0, 11], [0.39300291475496796, 0.2776316969018233, 0.126119002699852, 0.06309231253046739, 0.99847776, 1.0, 11], [0.5068552141126833, 0.5350701503063503, 0.10387428849935532, 0.07100672216007584, 0.99845517, 0.99998415, 1], [0.8259014691177168, 0.561588748505241, 0.19017940759658813, 0.06183779210244354, 0.9978124, 1.0, 11], [0.3572974152078754, 0.37205836765075984, 0.07970784839830901, 0.0717129691650993, 0.9971597, 0.9999865, 8], [0.6075721492892817, 0.3602217231926165, 0.06469819890825372, 0.08873481940674155, 0.9846987, 0.99991477, 1], [0.7006217084432903, 0.5849496910446569, 0.04619896098187095, 0.0912210315858063, 0.98322713, 0.999108, 8], [0.2127488790766189, 0.5441011111987265, 0.0972110852599144, 0.14776242602812617, 0.97344166, 0.9998832, 13], [0.5822320529504826, 0.5355440684055027, 0.060968093181911265, 0.070755262123911, 0.9719987, 1.0, 11], [0.6908324423589205, 0.34561034213555486, 0.02139272972157127, 0.02993349966249968, 0.86308485, 0.9999999, 7], [0.21392252649131574, 0.7571922987699509, 0.02189973075138895, 0.025067881533974094, 0.8294356, 1.0, 7], [0.702397852351791, 0.7942947404165017, 0.021913666474191767, 0.02614977014692206, 0.8207587, 0.99999976, 7], [0.5067203288015566, 0.7983980751351306, 0.023722228251005475, 0.030404263421108847, 0.730084, 0.9999956, 7], [0.50593485565562, 0.3717717426387887, 0.022606259898135538, 0.028324933428513378, 0.72388184, 1.0, 7], [0.21622652560472488, 0.38851067423820496, 0.020578279307014065, 0.02438192932229293, 0.71109116, 0.99999785, 7], [0.2201603972598126, 0.3785791059857921, 0.020515583847698412, 0.02311000071073833, 0.58447856, 0.99998975, 7]]
-box_label = ['capacitor-polarized', 'capacitor-unpolarized', 'crossover', 'diode', 'diode-light_emitting', 'gnd', 'inductor', 'junction', 'resistor', 'resistor-adjustable', 'terminal', 'text', 'transistor', 'voltage-dc', 'voltage-dc_ac']
+image = cv2.imread("test/test_image.jpg")
+box_list = pickle.load(open("boxes.dat", "rb"))
+box_label = pickle.load(open("class_names.dat", "rb"))
 
 PIXEL_CUT_THRESHOLD = 3 # the number of pixel we going 2 let them live.
+POWER_THRESHOLD = 127
 def find_conection(image, box_list):
     height, width = image.shape
     # 1) create smaller boxes to remove from image
@@ -174,9 +176,10 @@ def build_ltspice(com_list):
         text += add_com(i, loc, type)
 
     # save jt_spice file
-    with open('LtCircuit.asc', 'w') as f:
+    file_name = 'LtCircuit.asc'
+    with open(file_name, 'w') as f:
         f.write(text)
-
+    print("\nLTspice circet was created and save - ", file_name)
     return text
 
 """ 1 ----
@@ -197,8 +200,20 @@ class drawen_component:
         self.contours = [] # appand [contours, R]
         self.real_connection = []
 
-
+erode_dilate_size = 3
+COLOR_THRESHOLD = 0.82
 if __name__ == '__main__':
+    import sys
+    if len(sys.argv) == 2:
+      image = cv2.imread(sys.argv[1])
+    elif len(sys.argv) == 3:
+      image = cv2.imread(sys.argv[1])
+      COLOR_THRESHOLD = float(sys.argv[2])
+    elif len(sys.argv) == 4:
+      image = cv2.imread(sys.argv[1])
+      COLOR_THRESHOLD = float(sys.argv[2])
+      erode_dilate_size = int(sys.argv[3])
+
     height, width, _ = image.shape
     draw_image = image
     for i in range(len(box_list)):
@@ -217,8 +232,7 @@ if __name__ == '__main__':
         cv2.imshow('', draw_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-
-    COLOR_THRESHOLD = 0.82
+ 
     # get bw image
     dim = (int(image.shape[1] / 2), int(image.shape[0] / 2))
     image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
@@ -227,13 +241,15 @@ if __name__ == '__main__':
     bw_gray = (gray < tmp) * np.max(gray)
 
     # clean noise
-    kernel = np.ones((3, 3), np.uint8)
+    kernel = np.ones((erode_dilate_size, erode_dilate_size), np.uint8)
     bw_gray = cv2.erode(bw_gray, kernel, iterations=1)
     bw_gray = cv2.dilate(bw_gray, kernel, iterations=1)
     if TO_DRAW:
         cv2.imshow('', bw_gray)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+    # save image to show later
+    cv2.imwrite('test_image_gray.png', bw_gray)
 
     com_list = find_conection(bw_gray, box_list)
     build_ltspice(com_list)
