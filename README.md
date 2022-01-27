@@ -61,7 +61,7 @@ see the Test file to test the project.
 * the model - models.py
 * the code to train the model - train.py
 
-## in dir LTspice_tranforme
+### Folders - LTspice_tranforme
 * the code that create component in an LTspice file - component_pleaser.py
 * image proccesing code, that also create the LTspice file - build_circet.py (get as an input the labels of the image from the model, and the image)
 
@@ -70,5 +70,7 @@ see the Test file to test the project.
 
 # Reference
 [1] Hand drawing circet diagram dataset - https://arxiv.org/abs/2107.10373 
+
 [2] the model we toke and fine tuning -	https://github.com/roboflow-ai/pytorch-YOLOv4
+
 [3] Yolov4 model article- https://towardsdatascience.com/yolo-v4-optimal-speed-accuracy-for-object-detection-79896ed47b50#6ac9 
