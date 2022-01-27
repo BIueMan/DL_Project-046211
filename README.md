@@ -2,41 +2,40 @@
 
 Object Detection on component on Handwritten Circuit Diagram, and convert them into LTspice simulation file.
 ![alt text](https://github.com/BIueMan/DL_Project-046211/blob/master/Images/fig71.png)
-### Base on the YOLOv4 moudel
+### Base on the YOLOv4 model
 
-In this notebook, convert a Handwritten Circuit Diagram into LTspice file.
-using deap learning and image prosesing, we can extract all the features we need in order to build a simulation file.
+In this notebook, convert a Handwritten Circuit Diagram into LTspice file. using deep learning and image processing, we can extract all the features we need in order to build a simulation file.
 
-the algoritem can be divided into 3 part
-1. Deep Learning on a YOLOv4 Base moudel, to extract the components and junctions locations
-2. Image prossing, to extract all the wire and conation of the components
-3. Convert into LTspice file base on all the features we have extracted
+the algorithm  can be divided into 3 part
+1. Deep Learning on a YOLOv4[3] Base model, to extract the components and junctions locations
+2. Image processing, to extract all the wire and conation of the components
+3. Convert into LTspice file based on all the features we have extracted
 
 ### part 1. deep learning model
-In this part, we use a labeled Handwritten Circuit Diagram dataset[1]. we clean it with component we dont have alot of, and end up with 12 labels.
-  capacitor, coil, resistor
-  Power and current source
-  diode and transistors
-  Intersections and overleap on wires (Two different types of each)
-  and finaly, text
+In this part, we use a labeled Handwritten Circuit Diagram dataset[1]. we clean it with component we don't have a lot of, and end up with 12 labels.
+ * capacitor, coil, resistor
+ * Power and current source
+ * diode and transistors
+ * Intersections and overleap on wires (Two different types of each)
+ * and finaly, text
   
 ![alt text](https://github.com/BIueMan/DL_Project-046211/blob/master/Images/YOLOv4%20model.png)
 
-we Fine Tuning a YOLOv4 base model, that was train on general object detection. and got good resoults with a good yolo_loss:
+We Fine-Tuning a YOLOv4[2] base model, that was train on general object detection. and got good results with a good yolo loss:
 
 we used in order to train the model:
-  Epochs:          70
-  Batch size:      2
-  Subdivisions:    1
-  Learning rate:   0.0001
-  Optimizer:       adam
-  Loss function:   yolo_loss
-  Dataset classes: 12
+* Epochs:          70
+* Batch size:      2
+* Subdivisions:    1
+* Learning rate:   0.0001
+* Optimizer:       adam
+* Loss function:   yolo_loss
+* Dataset classes: 12
         
 ![alt text](https://github.com/BIueMan/DL_Project-046211/blob/master/Images/Figure_1%2B2.png)
 
 ### part 2. image processing
-to extract the wire and conetion between the compunents. we use a basic image processing technics, incloding:
+to extract the wire and conetion between the components. we use a basic image processing techniques, including:
 1. convert the image into binary image
 2. Erode and Dilate to remove noise
 3. Remove label components from the image
@@ -48,12 +47,12 @@ after we remove the labeled components from the images, we should stay only with
 ![alt text](https://github.com/BIueMan/DL_Project-046211/blob/master/Images/image_proccesing.png)
 
 ### part 3. convort into LTspice file
-finaly with all the Features, we can code circet using the location, and the conection of the components.
+finally with all the Features, we can code circuit using the location, and the connection of the components.
 
 ![alt text](https://github.com/BIueMan/DL_Project-046211/blob/master/Images/ltspice_circet.png)
 
-We train the model on google colab, and so the can be easly rerun. how to run it is realdy wriden in the ipynd file.
-see the Test file to test the project.
+
+We train the model on google colab, and so the can be easly rerun. how to run it is really written in the ipynb file. see the Test file to test the project.
 # Code
 * training file - TRAIN-Circet_Object_Detector_YOLOv4.ipynb
 * testing file, with the best weights - TEST_with_image-Circet_Object_Detector_YOLOv4.ipynb
