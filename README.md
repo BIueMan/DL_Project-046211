@@ -2,7 +2,7 @@
 
 Object Detection on component on Handwritten Circuit Diagram, and convert them into LTspice simulation file.
 ![alt text](https://github.com/BIueMan/DL_Project-046211/blob/master/Images/fig71.png)
-### Base on the YOLOv4 model
+#### Base on the YOLOv4 model
 
 In this notebook, convert a Handwritten Circuit Diagram into LTspice file. using deep learning and image processing, we can extract all the features we need in order to build a simulation file.
 
